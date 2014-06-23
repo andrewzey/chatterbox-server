@@ -13,7 +13,25 @@ module.exports.handleRequest = function(request, response) {
 
   console.log("Serving request type " + request.method + " for url " + request.url);
 
-  var statusCode = 200;
+  var messages = {results: []};
+  var statusCode;
+
+  switch(request.method) {
+    case 'POST':
+      //code block
+      break;
+    case 'GET':
+      statusCode = 200;
+      break;
+    case 'DELETE':
+      //code block
+      break;
+    case 'UPDATE':
+      //code block
+      break;
+    default:
+        //default code block
+  }
 
   /* These headers will allow Cross-Origin Resource Sharing (CORS).
    * This CRUCIAL code allows this server to talk to websites that
@@ -24,21 +42,21 @@ module.exports.handleRequest = function(request, response) {
     "access-control-allow-origin": "*",
     "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS",
     "access-control-allow-headers": "content-type, accept",
-    "access-control-max-age": 10 // Seconds.
+    "access-control-max-age": 10 //Seconds.
   };
 
   /* Without this line, this server wouldn't work. See the note
    * below about CORS. */
 
   var headers = defaultCorsHeaders;
-
   headers['Content-Type'] = "text/plain";
 
   /* .writeHead() tells our server what HTTP status code to send back */
   response.writeHead(statusCode, headers);
-  // response.write(request.url);
+
+
   if (request.url === "/classes/messages") {
-    response.write('{}');
+    response.write(JSON.stringify(messages));
   } else {
     response.write("Wrong URL Bud");
   }
