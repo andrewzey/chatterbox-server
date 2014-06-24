@@ -1,3 +1,5 @@
+var fs = require('fs');
+var dbPath = __dirname + '/db.json';
 /* You should implement your request handler function in this file.
  * And hey! This is already getting passed to http.createServer()
  * in basic-server.js. But it won't work as is.
@@ -5,7 +7,7 @@
  * this file and include it in basic-server.js so that it actually works.
  * *Hint* Check out the node module documentation at http://nodejs.org/api/modules.html. */
 
-module.exports.handleRequest = function(request, response) {
+module.exports.handler = function(request, response) {
   /* the 'request' argument comes from nodes http module. It includes info about the
   request - such as what URL the browser is requesting. */
 
@@ -50,43 +52,31 @@ module.exports.handleRequest = function(request, response) {
         });
         request.on('end', function(){
           message = JSON.parse(message);
-          database.results.push(message);
-          response.end(JSON.stringify(database));
+          //read file, parse it, change it, then write file
+          fs.readFile(dbPath, {'encoding': 'utf8'}, function (err, data) {
+            if (err) throw err;
+            var parsedData = JSON.parse(data);
+            parsedData.results.push(message);
+            //console.log(data.results);
+            console.log();
+            // console.log(parsedData);
+
+            // fs.writeFile(dbPath, JSON.stringify(parsedData), function (err) {
+            //   if (err) throw err;
+            //   console.log('It\'s saved!');
+            // });
+            // response.end(parsedData);
+            response.end(JSON.stringify(parsedData));
+          });
         });
         break;
       case 'GET':
         statusCode = 200;
         response.writeHead(statusCode, headers);
-        response.write(JSON.stringify(database));
-        break;
-      // case 'DELETE':
-      //   //code block
-      //   break;
-      // case 'UPDATE':
-      //   //code block
-      //   break;
-      default:
-        //default code block
-    }
-  } else if (request.url === '/classes/room1') {
-    switch(request.method) {
-      case 'POST':
-        statusCode = 201;
-        response.writeHead(statusCode, headers);
-        var message = '';
-        request.on('data', function(data) {
-          message += data;
-        });
-        request.on('end', function() {
-          message = JSON.parse(message);
-          database.results.push(message);
-          response.write(JSON.stringify(database));
-        });
-        break;
-      case 'GET':
-        statusCode = 200;
-        response.writeHead(statusCode, headers);
-        response.write(JSON.stringify(database));
+        fs.readFile(dbPath, {'encoding': 'utf8'}, function (err, data) {
+            if (err) throw err;
+            response.end(data);
+          });
         break;
       // case 'DELETE':
       //   //code block
@@ -100,6 +90,7 @@ module.exports.handleRequest = function(request, response) {
   } else {
     statusCode = 404;
     response.writeHead(statusCode, headers);
+    response.end();
   }
 
 
@@ -107,7 +98,7 @@ module.exports.handleRequest = function(request, response) {
    * anything back to the client until you do. The string you pass to
    * response.end() will be the body of the response - i.e. what shows
    * up in the browser.*/
-  response.end();
+
 
 };
 

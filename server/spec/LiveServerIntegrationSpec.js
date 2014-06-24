@@ -17,7 +17,7 @@ describe('Live Node Chat Server', function() {
     });
   });
 
-  it('Should send back an object', function(done) {
+  it('Should send back a stringified object', function(done) {
     request('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
       parsedBody = JSON.parse(body);
       expect(parsedBody).to.be.an('object');
@@ -25,7 +25,7 @@ describe('Live Node Chat Server', function() {
     });
   });
 
-  it('Should send an object containing a `results` array', function(done) {
+  it('Should send a stringified object containing a `results` array', function(done) {
     request('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
       parsedBody = JSON.parse(body);
       expect(parsedBody).to.be.an('object');
