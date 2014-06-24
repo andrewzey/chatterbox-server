@@ -13,8 +13,8 @@ var app = {
     $.ajax({
       url: this.server,
       type: 'POST',
-      data: JSON.stringify(message),
-      contentType: 'application/json',
+        data: JSON.stringify(message),
+        contentType: 'application/json',
       success: function(data) {
         console.log('Message with unknown ID was sucessfully sent');
       },
@@ -30,7 +30,7 @@ var app = {
       type: 'GET',
       // data: {order: '-createdAt'},
       success: function(data) {
-        callback(JSON.parse(data).results);
+        callback(data.results);
       }
     });
   },
