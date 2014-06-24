@@ -47,11 +47,11 @@ module.exports.handleRequest = function(request, response) {
         request.on('data', function(data) {
           message += data;
         });
-        request.on('end', function() {
-          console.log('hello');
-          // message = JSON.parse(message);
+        request.on('end', function(){
+          message = JSON.parse(message);
           messages.results.push(message);
-          response.write(JSON.stringify(messages));
+          response.end(JSON.stringify(messages));
+          console.log(JSON.parse(JSON.stringify(messages)).results[0].username);
         });
         break;
       case 'GET':
@@ -73,11 +73,48 @@ module.exports.handleRequest = function(request, response) {
     response.writeHead(statusCode, headers);
   }
 
+  // if (request.url === '/classes/room') {
+  //   switch(request.method) {
+  //     case 'POST':
+  //       statusCode = 201;
+  //       response.writeHead(statusCode, headers);
+  //       var message = '';
+  //       request.on('data', function(data) {
+  //         message += data;
+  //       });
+  //       request.on('end', function() {
+  //         message = JSON.parse(message);
+  //         messages.results.push(message);
+  //         //console.log("messages" + messages);
+  //         console.log(JSON.parse(JSON.stringify(messages)).results[0].username);
+  //         response.write(JSON.stringify(messages));
+  //       });
+  //       break;
+  //     case 'GET':
+  //       statusCode = 200;
+  //       response.writeHead(statusCode, headers);
+  //       response.write(JSON.stringify(messages));
+  //       break;
+  //     // case 'DELETE':
+  //     //   //code block
+  //     //   break;
+  //     // case 'UPDATE':
+  //     //   //code block
+  //     //   break;
+  //     default:
+  //       //default code block
+  //   }
+  // } else {
+  //   statusCode = 404;
+  //   response.writeHead(statusCode, headers);
+  // }
+
 
   /* Make sure to always call response.end() - Node will not send
    * anything back to the client until you do. The string you pass to
    * response.end() will be the body of the response - i.e. what shows
    * up in the browser.*/
   response.end();
+
 };
 
