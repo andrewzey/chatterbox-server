@@ -17,8 +17,6 @@ module.exports.handler = function(request, response) {
   console.log("Serving request type " + request.method + " for url " + request.url);
 
 
-  var statusCode;
-
 
   /* These headers will allow Cross-Origin Resource Sharing (CORS).
    * This CRUCIAL code allows this server to talk to websites that
@@ -44,39 +42,36 @@ module.exports.handler = function(request, response) {
   if (request.url === '/classes/messages') {
     switch(request.method) {
       case 'POST':
-        statusCode = 201;
-        response.writeHead(statusCode, headers);
         var message = '';
         request.on('data', function(data) {
           message += data;
         });
         request.on('end', function(){
           message = JSON.parse(message);
-          //read file, parse it, change it, then write file
+
           fs.readFile(dbPath, {'encoding': 'utf8'}, function (err, data) {
             if (err) throw err;
             var parsedData = JSON.parse(data);
             parsedData.results.push(message);
-            //console.log(data.results);
-            console.log();
-            // console.log(parsedData);
 
-            // fs.writeFile(dbPath, JSON.stringify(parsedData), function (err) {
-            //   if (err) throw err;
-            //   console.log('It\'s saved!');
-            // });
-            // response.end(parsedData);
-            response.end(JSON.stringify(parsedData));
+            fs.writeFile(dbPath, JSON.stringify(parsedData), {'encoding': 'utf8'}, function (err) {
+              if (err) throw err;
+              response.writeHead(201, headers);
+              response.end();
+            });
           });
         });
         break;
       case 'GET':
-        statusCode = 200;
-        response.writeHead(statusCode, headers);
+        response.writeHead(200, headers);
         fs.readFile(dbPath, {'encoding': 'utf8'}, function (err, data) {
-            if (err) throw err;
-            response.end(data);
-          });
+          if (err) throw err;
+          response.end(data);
+        });
+        break;
+      case 'OPTIONS':
+        response.writeHead(200, headers);
+        response.end();
         break;
       // case 'DELETE':
       //   //code block
@@ -88,8 +83,7 @@ module.exports.handler = function(request, response) {
         //default code block
     }
   } else {
-    statusCode = 404;
-    response.writeHead(statusCode, headers);
+    response.writeHead(404, headers);
     response.end();
   }
 

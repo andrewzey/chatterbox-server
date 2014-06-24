@@ -2,7 +2,7 @@
 var app = {
   //INIT & AJAX METHODS
   init: function(){
-    this.server = 'https://api.parse.com/1/classes/chatterbox';
+    this.server = 'http://127.0.0.1:3000/classes/messages';
     app.fetch(app.enterRoom);
     setInterval(function(){
       app.fetch(app.enterRoom);
@@ -16,7 +16,7 @@ var app = {
       data: JSON.stringify(message),
       contentType: 'application/json',
       success: function(data) {
-        console.log('Message with ID of ' + data.objectId + ' was sucessfully sent');
+        console.log('Message with unknown ID was sucessfully sent');
       },
       error: function(data) {
         console.log('Message sending failed');
@@ -28,9 +28,9 @@ var app = {
     $.ajax({
       url: this.server,
       type: 'GET',
-      data: {order: '-createdAt'},
+      // data: {order: '-createdAt'},
       success: function(data) {
-        callback(data.results);
+        callback(JSON.parse(data).results);
       }
     });
   },
