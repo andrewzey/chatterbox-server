@@ -16,22 +16,6 @@ module.exports.handleRequest = function(request, response) {
   var messages = {results: []};
   var statusCode;
 
-  switch(request.method) {
-    case 'POST':
-      //code block
-      break;
-    case 'GET':
-      statusCode = 200;
-      break;
-    case 'DELETE':
-      //code block
-      break;
-    case 'UPDATE':
-      //code block
-      break;
-    default:
-        //default code block
-  }
 
   /* These headers will allow Cross-Origin Resource Sharing (CORS).
    * This CRUCIAL code allows this server to talk to websites that
@@ -52,14 +36,43 @@ module.exports.handleRequest = function(request, response) {
   headers['Content-Type'] = "text/plain";
 
   /* .writeHead() tells our server what HTTP status code to send back */
-  response.writeHead(statusCode, headers);
 
 
-  if (request.url === "/classes/messages") {
-    response.write(JSON.stringify(messages));
+  if (request.url === '/classes/messages') {
+    switch(request.method) {
+      case 'POST':
+        statusCode = 201;
+        response.writeHead(statusCode, headers);
+        var message = '';
+        request.on('data', function(data) {
+          message += data;
+        });
+        request.on('end', function() {
+          console.log('hello');
+          // message = JSON.parse(message);
+          messages.results.push(message);
+          response.write(JSON.stringify(messages));
+        });
+        break;
+      case 'GET':
+        statusCode = 200;
+        response.writeHead(statusCode, headers);
+        response.write(JSON.stringify(messages));
+        break;
+      // case 'DELETE':
+      //   //code block
+      //   break;
+      // case 'UPDATE':
+      //   //code block
+      //   break;
+      default:
+        //default code block
+    }
   } else {
-    response.write("Wrong URL Bud");
+    statusCode = 404;
+    response.writeHead(statusCode, headers);
   }
+
 
   /* Make sure to always call response.end() - Node will not send
    * anything back to the client until you do. The string you pass to
