@@ -19,15 +19,27 @@ module.exports.handler = function(request, response) {
   console.log("Serving request type " + request.method + " for url " + request.url);
 
   var path = url.parse(request.url).pathname;
+  var subPath = request.url.split('/');
 
   if (request.url === '/' || request.url[1] === '?') {
     utils.headers['Content-Type'] = "text/html";
-    var html = fs.readFileSync(clientPath + '/client/client/index.html');
+    var html = fs.readFileSync(clientPath + '/client/index.html');
     response.writeHead(200, utils.headers);
     response.end(html);
     utils.headers['Content-Type'] = "application/json";
   } else if (path === '/classes/messages' && requestRouter[request.method]) {
     requestRouter[request.method](request, response);
+  } else if (subPath[1] === 'client') {
+
+    var filetype = request.url.split('.').pop();
+    if (filetype === 'js') {
+      filetype = "javascript";
+    }
+    utils.headers['Content-Type'] = "text/" + filetype;
+    var file = fs.readFileSync(clientPath + '/client/' + request.url);
+    response.writeHead(200, utils.headers);
+    response.end(file);
+    utils.headers['Content-Type'] = "application/json";
   } else {
     messages.send404(request, response);
   }
