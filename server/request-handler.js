@@ -1,5 +1,11 @@
+var utils = require('./server-utils');
+var fs = require('fs');
 var url = require('url');
 var messages = require('./messages');
+
+var serverPath = __dirname.split("/");
+serverPath.pop();
+var clientPath = serverPath.join("/");
 
 
 module.exports.handler = function(request, response) {
@@ -14,7 +20,13 @@ module.exports.handler = function(request, response) {
 
   var path = url.parse(request.url).pathname;
 
-  if (path === '/classes/messages' && requestRouter[request.method]) {
+  if (request.url === '/' || request.url[1] === '?') {
+    utils.headers['Content-Type'] = "text/html";
+    var html = fs.readFileSync(clientPath + '/client/client/index.html');
+    response.writeHead(200, utils.headers);
+    response.end(html);
+    utils.headers['Content-Type'] = "application/json";
+  } else if (path === '/classes/messages' && requestRouter[request.method]) {
     requestRouter[request.method](request, response);
   } else {
     messages.send404(request, response);
